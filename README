@@ -1,0 +1,11 @@
+This is Perl module Class::Freezer::Lite.
+
+DOCUMENTATION
+
+Class::Freezer::Lite documentation is available as in POD. So you can do:
+
+    % perldoc Class::Freezer::Lite
+
+to read the documentation online with your favorite pager.
+
+Naoki Tomita
