@@ -37,16 +37,11 @@ sub test_class_freezser {
     subtest $testname => sub {
         my $id;
         
-        subtest 'store' => sub {
+        subtest 'create' => sub {
             plan 'no_plan';
             $id = $freezer->store($obj);
             ok $id;
-            ok $freezer->exists($id);
-            
             is($obj->{$Class::Freezer::Lite::ID}, $id);
-            # diag("id: $id");
-            
-            throws_ok { $freezer->store($obj) } qr/^Object already exists: id => $id/;
         };
 
         subtest 'load' => sub {
@@ -61,17 +56,14 @@ sub test_class_freezser {
             
             $obj->{name} = 'hello!!!';
             delete $obj->{tags};
-            ok $freezer->update($obj);
+            ok $freezer->store($obj);
         };
 
-        subtest 'update' => sub {
+        subtest 'updated' => sub {
             plan 'no_plan';
             my $obj = $freezer->load($id);
             is($obj->name, 'hello!!!');
             ok not defined $obj->{tags};
-            
-            $obj->{$Class::Freezer::Lite::ID} = 'xxx';
-            throws_ok { $freezer->update($obj) } qr/^Object does not exist: id => xxx/;
         };
 
         subtest 'delete' => sub {

@@ -6,6 +6,7 @@ our $VERSION = '0.01';
 use Carp; $Carp::Internal{ (__PACKAGE__) }++;
 use Data::UUID;
 use Scalar::Util qw/blessed/;
+
 use Class::Freezer::Lite::Backend;
 
 our $ID = __PACKAGE__ . '::ID';
@@ -32,32 +33,8 @@ sub connect {
 sub store {
     my ($self, $obj) = @_;
     my ($id, $namespace) = $self->_check_obj($obj);
-    $self->{backend}->begin;
-    if ($self->exists($id)) {
-        $self->{backend}->rollback;
-        croak "Object already exists: id => $id";
-    }
     $self->{backend}->store($id, $namespace, $obj);
-    $self->{backend}->commit;
     $id;
-}
-
-sub update {
-    my ($self, $obj) = @_;
-    my ($id, $namespace) = $self->_check_obj($obj);
-    $self->{backend}->begin;
-    if (not $self->exists($id)) {
-        $self->{backend}->rollback;
-        croak "Object does not exist: id => $id";
-    }
-    $self->{backend}->update($id, $namespace, $obj);
-    $self->{backend}->commit;
-    $obj;
-}
-
-sub exists {
-    my ($self, $id) = @_;
-    $self->{backend}->exists($id);
 }
 
 sub load {

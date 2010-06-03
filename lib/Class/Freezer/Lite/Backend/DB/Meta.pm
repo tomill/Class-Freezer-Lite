@@ -8,9 +8,9 @@ sub new {
     my ($class, $dsn, $user, $pass, $attr) = @_;
     my $self = bless { }, $class;
     $attr = {
+        %{ $attr || {} },
         AutoCommit => 1,
         RaiseError => 1,
-        %{ $attr || {} },
     };
     $self->{db} = DBIx::Simple->connect($dsn, $user, $pass, $attr);
     $self->{db}->query(q{
@@ -26,28 +26,9 @@ sub new {
     $self;
 }
 
-sub begin    { shift->{db}->begin_work }
-sub commit   { shift->{db}->commit }
-sub rollback { shift->{db}->rollback }
-
 sub store {
     my ($self, $id, $namespace, $obj) = @_;
-    for my $key (keys %$obj) {
-        my $value  = $obj->{$key};
-        my $is_raw = 1;
-        if (ref $value) {
-            $value  = $self->serializer->freeze($obj->{$key});
-            $is_raw = 0;
-        }
-        $self->{db}->query(
-            'insert into freezer (id, namespace, key, value, is_raw) values (??)',
-            $id, $namespace, $key, $value, $is_raw,
-        );
-    }
-}
-
-sub update {
-    my ($self, $id, $namespace, $obj) = @_;
+    $self->{db}->begin_work;
     for my $key (keys %$obj) {
         my $value  = $obj->{$key};
         my $is_raw = 1;
@@ -65,12 +46,7 @@ sub update {
     my $sql = sprintf 'delete from freezer where id = ? and namespace = ? and key not in (%s)',
                       join(', ', ('?') x @keys);
     $self->{db}->query($sql, $id, $namespace, @keys);
-}
-
-sub exists {
-    my ($self, $id) = @_;
-    my ($count) = $self->{db}->query('select count(*) from freezer where id = ?', $id)->flat;
-    $count ? $id : 0;
+    $self->{db}->commit;
 }
 
 sub load {

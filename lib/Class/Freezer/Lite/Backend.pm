@@ -9,7 +9,8 @@ sub auto {
     
     my $backend = do {
         my $class = $dsn =~ /^dbi:/ ? 'DB::Meta'
-                  : '';
+                  #: $dsn =~ /\.yaml$/ ? 'YAML'
+                  : undef;
         croak "Cannot offer backend for $dsn" unless $class;
         __PACKAGE__ . "::$class";
     };
