@@ -4,9 +4,8 @@ use warnings;
 use base 'Class::Freezer::Lite::Backend';
 use DBIx::Simple;
 
-sub new {
-    my ($class, $dsn, $user, $pass, $attr) = @_;
-    my $self = $class->SUPER::new;
+sub init {
+    my ($self, $dsn, $user, $pass, $attr) = @_;
     $attr = {
         %{ $attr || {} },
         AutoCommit => 1,
@@ -23,7 +22,6 @@ sub new {
             primary key( id, key )
         )
     });
-    $self;
 }
 
 sub store {

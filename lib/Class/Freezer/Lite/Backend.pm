@@ -4,12 +4,18 @@ use warnings;
 use Carp;
 use Data::Serializer;
 
+sub new {
+    my $self = bless {}, shift;
+    $self->init(@_);
+    $self;
+}
+
 sub auto {
     my ($class, $dsn, @args) = @_;
     
     my $backend = do {
         my $class = $dsn =~ /^dbi:/ ? 'DB::Meta'
-                  #: $dsn =~ /\.yaml$/ ? 'YAML'
+                  : $dsn =~ /^files:/ ? 'Files'
                   : undef;
         croak "Cannot offer backend for $dsn" unless $class;
         __PACKAGE__ . "::$class";
