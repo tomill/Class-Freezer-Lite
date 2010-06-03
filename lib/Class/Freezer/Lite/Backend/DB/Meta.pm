@@ -6,7 +6,7 @@ use DBIx::Simple;
 
 sub new {
     my ($class, $dsn, $user, $pass, $attr) = @_;
-    my $self = bless { }, $class;
+    my $self = $class->SUPER::new;
     $attr = {
         %{ $attr || {} },
         AutoCommit => 1,
@@ -27,7 +27,8 @@ sub new {
 }
 
 sub store {
-    my ($self, $id, $namespace, $obj) = @_;
+    my ($self, $id, $obj) = @_;
+    my $namespace = ref $obj;
     $self->{db}->begin_work;
     for my $key (keys %$obj) {
         my $value  = $obj->{$key};
@@ -51,19 +52,22 @@ sub store {
 
 sub load {
     my ($self, $id) = @_;
-    my $obj = {};
-    my $namespace;
     my $res = $self->{db}->query(
         'select namespace, key, value, is_raw from freezer where id = ?',
         $id,
     );
+    my $obj = {};
+    my $namespace;
     while (my $row = $res->hash) {
         $obj->{ $row->{key} } = $row->{is_raw} ? $row->{value}
                               : $self->serializer->thaw($row->{value});
         $namespace ||= $row->{namespace};
     }
-    
-    ($namespace, $obj);
+    if (keys %$obj) {
+        return bless $obj, $namespace;
+    } else {
+        return;
+    }
 }
 
 sub delete {

@@ -32,22 +32,22 @@ sub connect {
 
 sub store {
     my ($self, $obj) = @_;
-    my ($id, $namespace) = $self->_check_obj($obj);
-    $self->{backend}->store($id, $namespace, $obj);
+    my $id = $self->_check_obj($obj);
+    $self->{backend}->store($id, $obj);
     $id;
 }
 
 sub load {
     my ($self, $id) = @_;
     $self->{backend}->load($id);
-    my ($namespace, $obj) = $self->{backend}->load($id);
+    my $obj = $self->{backend}->load($id);
     croak "Cannot find object: id => $id" unless keys %$obj;
-    bless $obj, $namespace;
+    $obj;
 }
 
 sub delete {
     my ($self, $obj_or_id) = @_;
-    my ($id) = ref($obj_or_id) ? $self->_check_obj($obj_or_id) : $obj_or_id;
+    my $id = ref($obj_or_id) ? $self->_check_obj($obj_or_id) : $obj_or_id;
     $self->{backend}->delete($id) ? 1 : 0;
 }
 
@@ -68,8 +68,6 @@ sub _check_obj {
         $self->{uuid} ||= new Data::UUID;
         $self->{uuid}->create_str;
     };
-
-    ($obj->{$ID}, ref $obj);
 }
 
 1;
