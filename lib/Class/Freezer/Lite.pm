@@ -1,9 +1,9 @@
 package Class::Freezer::Lite;
-use 5.008000;
+use 5.008001;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use Carp; $Carp::Internal{ (__PACKAGE__) }++;
+use Carp;
 use Data::UUID;
 use Scalar::Util qw/blessed/;
 
@@ -23,10 +23,16 @@ sub new {
     $self;
 }
 
+sub backend    { shift->{backend} }
+sub serializer { shift->{backend}{serializer} }
+
 sub connect {
     my ($class, $dsn, @args) = @_;
     my $self = $class->new(
-        backend => Class::Freezer::Lite::Backend->auto($dsn, @args),
+        backend => do {
+            Class::Freezer::Lite::Backend->auto($dsn, @args)
+                or croak "Cannot offer backend for $dsn";
+        },
     );
 }
 
@@ -73,11 +79,9 @@ sub _check_obj {
 1;
 __END__
 
-=encoding utf-8
-
 =head1 NAME
 
-Class::Freezer::Lite -
+Class::Freezer::Lite - Simple perl object persistence tool
 
 =head1 SYNOPSIS
 
@@ -85,21 +89,49 @@ Class::Freezer::Lite -
 
 =head1 DESCRIPTION
 
-Class::Freezer::Lite is
+Class::Freezer::Lite is a super lite module to make perl object persistence,
+and it is similar in L<KiokuDB>.
+
+* Not support scope, transparent systems.
+
+* This will be able to store only simple blessed hash object (like Mouse or Class::Accessor).
 
 =head1 METHODS
 
 =over 4
 
-=item new
+=item connect
 
-=item foo
+  my $freezer = Class::Freezer::Lite->connect(
+      "dbi:SQLite:dbname=:memory:", "", "", {
+          sqlite_unicode => 1,
+      }
+  );
+
+=item store
+
+  my $id = $freezer->store($obj);
+
+=item load
+
+  my $obj = $freezer->load($id);
+
+=item delete
+
+  $freezer->delete($id);
+
+=item search
+
+  my @ids = $freezer->search(
+      key   => 'name',
+      value => { 'like', '%e' },
+  );
 
 =back
 
 =head1 SEE ALSO
 
-
+L<KiokuDB>, L<Data::Serializer>
 
 =head1 AUTHOR
 

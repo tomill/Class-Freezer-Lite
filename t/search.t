@@ -13,20 +13,20 @@ my $freezer = Class::Freezer::Lite->connect(
     }
 );
 
-my %ids;
+my %id_table;
 for (qw/ apple banana grape melon orange /) {
     my $id = $freezer->store(Popo->new(name => $_));
-    $ids{$_} = $id;
+    $id_table{$_} = $id;
 }
 
-my @res = $freezer->search(
+my @ids = $freezer->search(
     key   => 'name',
     value => { 'like', '%e' },
 );
 
 is_deeply(
-    [ sort(@res) ],
-    [ sort($ids{apple}, $ids{grape}, $ids{orange}) ],
+    [ sort(@ids) ],
+    [ sort($id_table{apple}, $id_table{grape}, $id_table{orange}) ],
 );
 
 done_testing;

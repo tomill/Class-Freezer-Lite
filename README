@@ -1,11 +1,48 @@
-This is Perl module Class::Freezer::Lite.
+NAME
+    Class::Freezer::Lite - Simple perl object persistence tool
 
-DOCUMENTATION
+SYNOPSIS
+      use Class::Freezer::Lite;
 
-Class::Freezer::Lite documentation is available as in POD. So you can do:
+DESCRIPTION
+    Class::Freezer::Lite is a super lite module to make perl object
+    persistence, and it is similar in KiokuDB.
 
-    % perldoc Class::Freezer::Lite
+    * Not support scope, transparent systems.
 
-to read the documentation online with your favorite pager.
+    * This will be able to store only simple blessed hash object (like Mouse
+    or Class::Accessor).
 
-Naoki Tomita
+METHODS
+    connect
+          my $freezer = Class::Freezer::Lite->connect(
+              "dbi:SQLite:dbname=:memory:", "", "", {
+                  sqlite_unicode => 1,
+              }
+          );
+
+    store
+          my $id = $freezer->store($obj);
+
+    load
+          my $obj = $freezer->load($id);
+
+    delete
+          $freezer->delete($id);
+
+    search
+          my @ids = $freezer->search(
+              key   => 'name',
+              value => { 'like', '%e' },
+          );
+
+SEE ALSO
+    KiokuDB, Data::Serializer
+
+AUTHOR
+    Naoki Tomita <tomita@cpan.org>
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
