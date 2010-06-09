@@ -2,6 +2,11 @@ use strict;
 use warnings;
 use Test::Most tests => 2;
 
+use Test::Requires {
+    'DBD::SQLite' => 1.27, # :memory:
+    'Time::Piece' => 0,
+};
+
 use Class::Freezer::Lite;
 
 use utf8;

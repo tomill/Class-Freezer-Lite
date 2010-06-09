@@ -1,7 +1,6 @@
 package Class::Freezer::Lite::Backend;
 use strict;
 use warnings;
-use Carp;
 use Data::Serializer;
 
 sub new {
@@ -17,7 +16,7 @@ sub auto {
         my $class = $dsn =~ /^dbi:/ ? 'DB::Meta'
                   : $dsn =~ /^files:/ ? 'Files'
                   : undef;
-        croak "Cannot offer backend for $dsn" unless $class;
+        return unless $class;
         __PACKAGE__ . "::$class";
     };
     

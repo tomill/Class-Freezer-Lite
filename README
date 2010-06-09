@@ -1,11 +1,34 @@
-This is Perl module Class::Freezer::Lite.
+NAME
+    Class::Freezer::Lite - Simple perl object persistence tool
 
-DOCUMENTATION
+SYNOPSIS
+      use Class::Freezer::Lite;
 
-Class::Freezer::Lite documentation is available as in POD. So you can do:
+DESCRIPTION
+    Class::Freezer::Lite is
 
-    % perldoc Class::Freezer::Lite
+    KiokuDB
 
-to read the documentation online with your favorite pager.
+    * リソース追跡Moose Popoのみ（MouseOk simple
 
-Naoki Tomita
+METHODS
+    connect
+    new
+    store
+    load
+    delete
+    search
+
+BACKEND
+    Class::Freezer::Lite::Backend::DB::Meta
+
+SEE ALSO
+    KiokuDB, Data::Serializer
+
+AUTHOR
+    Naoki Tomita <tomita@cpan.org>
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
